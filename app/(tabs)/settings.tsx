@@ -1,9 +1,9 @@
 import { Text, View, StyleSheet } from "react-native";
 
-export default function Index() {
+export default function Settings() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Home.</Text>
+      <Text style={styles.text}>Settings.</Text>
     </View>
   );
 }
@@ -17,11 +17,5 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "white",
-  },
-  button: {
-    margin: 5,
-    backgroundColor: "#fafafa",
-    padding: 15,
-    borderRadius: 10,
   },
 });
