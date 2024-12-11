@@ -5,7 +5,7 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#00e64d",
+        tabBarActiveTintColor: "white",
         headerStyle: { backgroundColor: "#25292e" },
         headerShadowVisible: false,
         headerTintColor: "#fff",
@@ -15,10 +15,11 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
-          headerTitle: "Home",
-          tabBarLabel: "Home",
+          title: "Home",
+          headerTitle: "Eco Reminer",
+          tabBarLabel: "Početna",
           tabBarIcon: ({ focused, color }) => (
             <Ionicons
               name={focused ? "home-sharp" : "home-outline"}
@@ -28,11 +29,29 @@ export default function TabsLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="calendar"
+        options={{
+          title: "Calendar",
+          headerTitle: "Kalendar",
+          tabBarLabel: "Kalendar",
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={focused ? "calendar-sharp" : "calendar-outline"}
+              color={color}
+              size={24}
+            />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="settings"
         options={{
-          headerTitle: "Settings",
-          tabBarLabel: "Settings",
+          title: "Settings",
+          headerTitle: "Postavke",
+          tabBarLabel: "Postavke",
           tabBarIcon: ({ focused, color }) => (
             <Ionicons
               name={focused ? "settings-sharp" : "settings-outline"}
@@ -42,7 +61,6 @@ export default function TabsLayout() {
           ),
         }}
       />
-      <Tabs.Screen name="not-found" />
     </Tabs>
   );
 }
