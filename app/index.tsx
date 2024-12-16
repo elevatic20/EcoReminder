@@ -4,23 +4,23 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import { Button } from "react-native-elements";
 import DropDownPicker from "react-native-dropdown-picker";
-import { useCity } from "./hooks/cityContext"; // Import CityContext hook
+import { useCity } from "./hooks/cityContext";
 
 const IndexPage = () => {
-  const { selectedCity, setSelectedCity } = useCity(); // Use context to set and get the selected city
-  const [cities, setCities] = useState<any[]>([]); // Holds city data for dropdown
-  const [open, setOpen] = useState(false); // Controls whether the dropdown is open or closed
-  const [value, setValue] = useState<string | null>(null); // Selected city ID
-  const [isLoading, setIsLoading] = useState<boolean>(true); // Loading state
+  const { selectedCity, setSelectedCity } = useCity(); // Koristi CityContext za grad
+  const [cities, setCities] = useState<any[]>([]); // Sprema popis gradova
+  const [open, setOpen] = useState(false); // Upravljanje otvaranjem dropdowna
+  const [value, setValue] = useState<string | null>(null); // Odabrani grad
+  const [isLoading, setIsLoading] = useState<boolean>(true); // Stanje učitavanja
 
-  // Automatically redirect if a city is already selected
+  // Ako je grad već odabran, automatski preusmjeri na početnu stranicu
   useEffect(() => {
     if (selectedCity) {
       router.push("/(tabs)/home");
     }
   }, [selectedCity]);
 
-  // Fetch cities from API
+  // Dohvati popis gradova s API-ja
   useEffect(() => {
     const fetchCities = async () => {
       try {
@@ -28,27 +28,29 @@ const IndexPage = () => {
           "https://city-waste-api.vercel.app/cities"
         );
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(`HTTP greška! Status: ${response.status}`);
         }
         const data = await response.json();
-        setCities(data); // Store cities in state
-        setIsLoading(false); // Set loading to false once data is fetched
+        setCities(data); // Postavi gradove u stanje
+        setIsLoading(false); // Prestani učitavati
       } catch (error) {
-        console.error("Error fetching cities:", error);
-        Alert.alert("Error", "Ne mogu dohvatiti gradove!");
-        setIsLoading(false); // If error occurs, stop loading
+        console.error("Greška pri dohvaćanju gradova:", error);
+        Alert.alert("Greška", "Nije moguće dohvatiti gradove.");
+        setIsLoading(false); // Prestani učitavati čak i u slučaju greške
       }
     };
 
     fetchCities();
   }, []);
 
-  // Handle city selection
+  // Obradi odabir grada
   const handleCitySelect = (cityName: string) => {
-    const selectedCity = cities.find((city) => city.name === cityName);
-    if (selectedCity) {
-      setSelectedCity(selectedCity); // Save selected city to context
-      router.push("/(tabs)/home"); // Navigate to Home page
+    const city = cities.find((c) => c.name === cityName);
+    if (city) {
+      setSelectedCity(city); // Spremi grad u kontekst
+      router.push("/(tabs)/home"); // Preusmjeri na Home
+    } else {
+      Alert.alert("Greška", "Odabrani grad nije pronađen.");
     }
   };
 
@@ -56,9 +58,9 @@ const IndexPage = () => {
     <View style={styles.container}>
       <Ionicons name="rocket-outline" size={80} color="#6200EE" />
       <Text style={styles.title}>Dobrodošli u Eco Reminder</Text>
-      <Text style={styles.title_grad}>Odaberite lokaciju:</Text>
+      <Text style={styles.subtitle}>Molimo odaberite svoju lokaciju:</Text>
 
-      {/* Dropdown picker */}
+      {/* Dropdown picker za odabir grada */}
       {isLoading ? (
         <ActivityIndicator size="large" color="#6200ee" />
       ) : (
@@ -66,8 +68,8 @@ const IndexPage = () => {
           open={open}
           value={value}
           items={cities.map((city: any) => ({
-            label: city.name, // Display city name
-            value: city.name, // Use city name as value
+            label: city.name, // Ime grada za prikaz
+            value: city.name, // Vrijednost za upravljanje
           }))}
           setOpen={setOpen}
           setValue={setValue}
@@ -76,20 +78,19 @@ const IndexPage = () => {
           containerStyle={styles.pickerContainer}
           style={styles.pickerStyle}
           labelStyle={styles.labelStyle}
+          onChangeValue={(val) => setValue(val as string)}
         />
       )}
 
+      {/* Gumb za potvrdu odabira */}
       <Button
         title="Krenimo"
-        buttonStyle={{
-          backgroundColor: "#6200EE",
-          borderRadius: 10,
-          paddingVertical: 10,
-          paddingHorizontal: 20,
-        }}
+        buttonStyle={styles.button}
         onPress={() => {
           if (value) {
-            handleCitySelect(value); // Call handleCitySelect on button press
+            handleCitySelect(value); // Obradi odabir grada
+          } else {
+            Alert.alert("Upozorenje", "Molimo odaberite grad prije nastavka.");
           }
         }}
       />
@@ -97,7 +98,7 @@ const IndexPage = () => {
   );
 };
 
-// Styles
+// Stilovi
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -109,31 +110,31 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: "bold",
-    marginBottom: 20,
     color: "white",
+    marginBottom: 10,
   },
-  title_grad: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 5,
+  subtitle: {
+    fontSize: 18,
     color: "white",
+    marginBottom: 20,
   },
   pickerContainer: {
     width: "100%",
-    marginBottom: 25,
+    marginBottom: 20,
   },
   pickerStyle: {
     backgroundColor: "#fafafa",
     borderRadius: 10,
   },
   labelStyle: {
-    fontSize: 18,
+    fontSize: 16,
     color: "#333",
   },
-  selectedText: {
-    fontSize: 18,
-    color: "#333",
-    marginTop: 10,
+  button: {
+    backgroundColor: "#6200EE",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
 });
 
