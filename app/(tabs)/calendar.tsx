@@ -20,8 +20,8 @@ interface WasteDate {
 
 const wasteColors: { [key: string]: string } = {
   Plastika: "#FFEB3B",
-  Papir: "#795548",
-  Bio: "#8BC34A",
+  Papir: "#1E90FF",
+  Bio: "#8B4513",
   Komunalni: "#212121",
 };
 
