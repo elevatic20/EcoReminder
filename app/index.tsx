@@ -7,11 +7,18 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { useCity } from "./hooks/cityContext"; // Import CityContext hook
 
 const IndexPage = () => {
-  const { setSelectedCity } = useCity(); // Use context to set the selected city
+  const { selectedCity, setSelectedCity } = useCity(); // Use context to set and get the selected city
   const [cities, setCities] = useState<any[]>([]); // Holds city data for dropdown
   const [open, setOpen] = useState(false); // Controls whether the dropdown is open or closed
   const [value, setValue] = useState<string | null>(null); // Selected city ID
   const [isLoading, setIsLoading] = useState<boolean>(true); // Loading state
+
+  // Automatically redirect if a city is already selected
+  useEffect(() => {
+    if (selectedCity) {
+      router.push("/(tabs)/home");
+    }
+  }, [selectedCity]);
 
   // Fetch cities from API
   useEffect(() => {

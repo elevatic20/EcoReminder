@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/trash-logo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.elevatic20.EcoReminder"
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +37,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "6273257e-e19d-483e-baa8-66a06a81d9b7"
+      }
     }
   }
 }
