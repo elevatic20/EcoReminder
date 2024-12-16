@@ -1,5 +1,3 @@
-// screens/Home.tsx
-
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -57,9 +55,18 @@ const Home = () => {
   }, [selectedCity]);
 
   // Sortiraj datume uzlazno
-  const sortedDates = [...dates]
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .filter((date) => new Date(date.date).getTime() >= new Date().getTime()); // Filtriraj prošle datume
+  const sortedDates = [...dates].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  // Podijeli datume na danas i sljedeće
+  const today = new Date().toLocaleDateString("hr-HR"); // Dobivanje lokalnog datuma u formatu hr-HR
+  const todayDates = sortedDates.filter(
+    (date) => new Date(date.date).toLocaleDateString("hr-HR") === today
+  );
+  const upcomingDates = sortedDates.filter(
+    (date) => new Date(date.date).getTime() > new Date().getTime()
+  );
 
   return (
     <View style={styles.container}>
@@ -67,58 +74,104 @@ const Home = () => {
 
       {loading ? (
         <ActivityIndicator size="large" color="#6200ee" />
-      ) : sortedDates.length === 0 ? (
-        <Text style={styles.noDates}>No dates available</Text>
       ) : (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {sortedDates.map((date, index) => {
-            const { dayOfWeek, formattedDate } = formatDate(date.date); // Formatiraj datum
+        <>
+          {/* Prikaz današnjeg datuma */}
+          {todayDates.length > 0 ? (
+            <View style={styles.todayContainer}>
+              <Text style={styles.todayTitle}>Danas:</Text>
+              {todayDates.map((date, index) => {
+                const { dayOfWeek, formattedDate } = formatDate(date.date);
+                return (
+                  <View
+                    key={index}
+                    style={[
+                      styles.dateContainer,
+                      new Date(date.date) < new Date() && styles.pastDate,
+                    ]}
+                  >
+                    <Ionicons
+                      name={
+                        date.waste_type === "Papir"
+                          ? "document-text"
+                          : date.waste_type === "Plastika"
+                          ? "logo-buffer"
+                          : date.waste_type === "Bio"
+                          ? "leaf"
+                          : "trash"
+                      }
+                      size={40}
+                      color={
+                        date.waste_type === "Papir"
+                          ? "#1E90FF"
+                          : date.waste_type === "Plastika"
+                          ? "#FFEB3B"
+                          : date.waste_type === "Bio"
+                          ? "#8B4513"
+                          : "#212121"
+                      }
+                      style={styles.icon}
+                    />
+                    <View style={styles.textContainer}>
+                      <Text style={styles.wasteType}>{date.waste_type}</Text>
+                      <Text style={styles.dayOfWeek}>{dayOfWeek}</Text>
+                      <Text style={styles.date}>{formattedDate}</Text>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          ) : (
+            <Text style={styles.noWasteToday}>Danas ne ide ni jedna kanta</Text>
+          )}
 
-            return (
-              <View
-                key={index}
-                style={[
-                  styles.dateContainer,
-                  new Date(date.date) < new Date() && styles.pastDate, // Stil za prošli datum
-                ]}
-              >
-                {/* Ikona */}
-                <Ionicons
-                  name={
-                    date.waste_type === "Papir"
-                      ? "document-text" // Promijenjeno ime ikone za papir
-                      : date.waste_type === "Plastika"
-                      ? "logo-buffer" // Ikona za plastiku
-                      : date.waste_type === "Bio"
-                      ? "leaf" // Ikona za bio
-                      : "trash" // Default ikona za ostale
-                  }
-                  size={40}
-                  color={
-                    date.waste_type === "Papir"
-                      ? "#795548"
-                      : date.waste_type === "Plastika"
-                      ? "#FFEB3B"
-                      : date.waste_type === "Bio"
-                      ? "#8BC34A"
-                      : "#212121"
-                  }
-                  style={styles.icon}
-                />
-                <View style={styles.textContainer}>
-                  {/* Naziv vrste otpada */}
-                  <Text style={styles.wasteType}>{date.waste_type}</Text>
-
-                  {/* Dan u tjednu */}
-                  <Text style={styles.dayOfWeek}>{dayOfWeek}</Text>
-
-                  {/* Datum */}
-                  <Text style={styles.date}>{formattedDate}</Text>
-                </View>
-              </View>
-            );
-          })}
-        </ScrollView>
+          {/* Prikaz budućih datuma */}
+          {upcomingDates.length > 0 && (
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+              <Text style={styles.upcomingTitle}>Sljedeći datumi:</Text>
+              {upcomingDates.map((date, index) => {
+                const { dayOfWeek, formattedDate } = formatDate(date.date);
+                return (
+                  <View
+                    key={index}
+                    style={[
+                      styles.dateContainer,
+                      new Date(date.date) < new Date() && styles.pastDate,
+                    ]}
+                  >
+                    <Ionicons
+                      name={
+                        date.waste_type === "Papir"
+                          ? "document-text"
+                          : date.waste_type === "Plastika"
+                          ? "logo-buffer"
+                          : date.waste_type === "Bio"
+                          ? "leaf"
+                          : "trash"
+                      }
+                      size={40}
+                      color={
+                        date.waste_type === "Papir"
+                          ? "#1E90FF"
+                          : date.waste_type === "Plastika"
+                          ? "#FFEB3B"
+                          : date.waste_type === "Bio"
+                          ? "#8B4513"
+                          : "#212121"
+                      }
+                      style={styles.icon}
+                    />
+                    <View style={styles.textContainer}>
+                      <Text style={styles.wasteType}>{date.waste_type}</Text>
+                      <Text style={styles.dayOfWeek}>{dayOfWeek}</Text>
+                      <Text style={styles.date}>{formattedDate}</Text>
+                    </View>
+                  </View>
+                );
+              })}
+            </ScrollView>
+          )}
+        </>
       )}
     </View>
   );
@@ -140,11 +193,30 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "Roboto",
   },
-  noDates: {
-    fontSize: 18,
+  todayContainer: {
+    width: "100%",
+    marginBottom: 20,
+  },
+  todayTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
     color: "#6200ee",
+    marginBottom: 10,
+    fontFamily: "Roboto",
+  },
+  noWasteToday: {
+    fontSize: 18,
+    color: "#FF0000", // Crvena boja za poruku
     fontStyle: "italic",
     textAlign: "center",
+    marginBottom: 20,
+  },
+  upcomingTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#6200ee",
+    marginBottom: 10,
+    fontFamily: "Roboto",
   },
   scrollContainer: {
     flexGrow: 1,
@@ -153,7 +225,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   dateContainer: {
-    flexDirection: "row", // Poravnanje ikone, naziva i datuma u jedan red
+    flexDirection: "row",
     alignItems: "center",
     width: "100%",
     paddingVertical: 15,
@@ -163,17 +235,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 10,
-    elevation: 3, // Samo za Android uređaje, za shadow
+    elevation: 3,
   },
   pastDate: {
     backgroundColor: "#f2f2f2", // Pozadina za prošle datume
   },
   icon: {
-    marginRight: 20, // Razmak između ikone i teksta
+    marginRight: 20,
     backgroundColor: "#f4f4f9",
     borderRadius: 25,
     padding: 10,
-    elevation: 2, // Mala sjena oko ikone
+    elevation: 2,
   },
   textContainer: {
     flex: 1,
